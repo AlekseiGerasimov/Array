@@ -12,9 +12,6 @@
     \date 03.03.2017
 */
 
-
-typedef float typearray;
-
 /*!
     Вспомогательный макрос, который сообщает что пошло не так в программе и закрывает её.
 */
@@ -25,14 +22,15 @@ typedef float typearray;
 
 using namespace std;
 
+template <class Type>
 class Array{
     public:
 /*!
     Конструкторы класса Массив
 */
         explicit Array();
-        explicit Array(int n);
-        explicit Array(typearray *,int);
+        explicit Array(size_t);
+        explicit Array(Type *,size_t);
         Array(const Array &);
 
 /*!
@@ -45,19 +43,19 @@ class Array{
     \param Передается новое значение элемента массива.
     \return Результат добавления. В случае успешного добавления возвращает true. В случае неудачного false.
 */
-        bool insert(typearray);
+        bool insert(const Type);
 /*!
     Удаляет элемент массива.
     \param Передается позиция,в которой хранится элемент.
     \return Удаленный элемент.
 */
-        typearray erase(int);
+        Type erase(const int);
 /*!
     Заменяет элемент массива.
     \param Передается позиция(int), а также значение на которое нужно поменять(typearray).
     \return Результат замены. В случае успешного добавления возвращает true. В случае неудачного false.
 */
-        bool replaceItem(int,typearray);
+        bool replaceItem(const int,const Type);
 /*!
     Проверяет пустой ли массив.
     \return Результат проверки. Если массив пуст,то возвращает true. Если в массиве пристуствуют элементы, то false.
@@ -72,7 +70,7 @@ class Array{
     \param Передается значение на которое нужно изменить все элементы массива.
     \return В случае успешной замены возвращается true. В случае неудачной false.
 */
-        bool fill(typearray);
+        bool fill(const Type);
 /*!
     Изменяет размер массива. Если переданное число в качестве параметра будет больше текущего значения количества элементов массива, то новые элементы получат значение nan.
     Прежние элементы не изменятся. Если переданное число будет меньше текущего значения массива, то удаляются все элементы, которые имеют большую позицию, чем переданное значение.
@@ -80,28 +78,28 @@ class Array{
     \param Новый размер массива.
     \return В случае успешной замены возвращает true. В случае неудачной false.
 */
-        bool setsize(int);
+        bool setcapacity(const int);
 /*!
     Вовзращает ссылку на первый элемент массива. В случае массива с количеством элементов равное 0 возвращает nan.
     \return Ссылка на первый элемент.
 */
-        typearray & first() const;
+        Type & first() const;
 /*!
     Вовзращает ссылку на последний элемент массива. В случае массива с количеством элементов равное 0 возвращает nan.
     \return Ссылка на последний элемент.
 */
-        typearray & last() const;
+        Type & last() const;
 /*!
     Возвращает ссылку на переданную(int) позицию. В случае выхода за пределы массива возвращает ошибку.
     \return Ссылка на элемент массива.
 */
-        typearray & at(int) const;
+        Type & at(const int) const;
 /*!
     Перегружает [].
     \param Позиция необходимого элемента.
     \return Сссылку на элемент.
 */
-        typearray & operator[](int data);
+        Type & operator[](const int);
 
 /*!
     Перегружает операцию сложения
@@ -114,7 +112,7 @@ class Array{
     \param Элемент который будет добавлен к данному.
     \return Новый массив, который будет состоять из элементов прежнего массива и добавленного элемента.
 */
-        const Array operator+(typearray);
+        const Array operator+(const Type);
 /*!
     Перегружает операцию присваивания.
     \param Массив, значения которого будут приравнены данному.
@@ -138,7 +136,41 @@ class Array{
     \param Стандартный поток ввода-вывода(ostream),выводимый массив(const Array).
     \return Выводит массив на экран.
 */
-        friend ostream& operator<<(ostream &,const Array &);
+//        friend ostream& operator<<(ostream &,const Array &);
+
+/*!
+    Перегрузка оператора new.
+*/
+        void * operator new(const size_t);
+        void * operator new[](const size_t);
+        void * operator new[](const size_t,const int);
+        void * operator new(const size_t,void *);
+
+/*!
+    Свапает 2 объекта класса массив.
+    \param Объект с которым будет свапнут this.
+*/
+        void swaps(Array &);
+
+/*!
+     Вспомогательный класс итератор. Позволяет перемещаться по массиву объекта класса Array.
+
+*/
+        class iterator{
+        public:
+            iterator();
+            iterator(Type *);
+            iterator(Type &);
+            Type & operator++();
+            Type operator*();
+            Type & next();
+            bool operator!=(Type &);
+            virtual ~iterator();
+        private:
+            Type *it;
+        };
+
+
 /*!
     Деструктор класса.
 */
@@ -148,15 +180,16 @@ class Array{
     Выводит информацию об ошибке.
     \param Строка, которая сообщает что пошло не так.
 */
-        void dump(string) const;
+        void dump(const string) const;
 /*!
     Указатель на первый элемент массива
 */
-        typearray *arr;
+        Type *arr;
 /*!
     Количество элементов
 */
-        int n;
+        size_t capacity;
+
 };
 
 #endif // ARRAY_H
